@@ -1,23 +1,30 @@
-body{
+*{
   margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
   overflow:hidden;
   background:black;
-  font-family:Arial;
+  font-family:Arial, sans-serif;
+  width:100vw;
+  height:100vh;
 }
 
 canvas{
   position:fixed;
-  top:0;
-  left:0;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
 }
 
 .orbitText{
-
   position:absolute;
-
   color:#f3f1ee;
 
-  font-size:10px;
+  font-size:clamp(10px, 1.2vw, 18px);
 
   font-weight:bold;
 
@@ -27,16 +34,16 @@ canvas{
     0 0 40px #ff3300,
     0 0 80px #e92304;
 
-  transform:
-    translate(-50%, -50%);
+  transform:translate(-50%, -50%);
 
   white-space:nowrap;
 
   pointer-events:none;
+
+  z-index:10;
 }
 
 body::after{
-
   content:'';
 
   position:fixed;
@@ -51,9 +58,11 @@ body::after{
     );
 
   pointer-events:none;
-}
-.floatingItem{
 
+  z-index:1;
+}
+
+.floatingItem{
   position:fixed;
 
   z-index:999;
@@ -68,4 +77,24 @@ body::after{
     0 0 40px #ff1177;
 
   animation-timing-function:linear;
+}
+
+/* ===== MOBILE ===== */
+
+@media (max-width:768px){
+
+  .orbitText{
+    font-size:12px;
+  }
+
+}
+
+/* ===== SMALL MOBILE ===== */
+
+@media (max-width:480px){
+
+  .orbitText{
+    font-size:10px;
+  }
+
 }
