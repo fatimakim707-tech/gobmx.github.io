@@ -1,18 +1,16 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160/build/three.module.js';
 
-/* =========================
-   RESPONSIVE DETECTION
-========================= */
-
-const isMobile = window.innerWidth < 768;
-
-/* =========================
+/* =========================================
    SCENE
-========================= */
+========================================= */
 
 const scene = new THREE.Scene();
 
 scene.background = new THREE.Color(0x000000);
+
+/* =========================================
+   CAMERA
+========================================= */
 
 const camera = new THREE.PerspectiveCamera(
   60,
@@ -21,11 +19,11 @@ const camera = new THREE.PerspectiveCamera(
   1000
 );
 
-camera.position.z = isMobile ? 24 : 20;
+camera.position.z = 20;
 
-/* =========================
+/* =========================================
    RENDERER
-========================= */
+========================================= */
 
 const renderer = new THREE.WebGLRenderer({
   canvas: document.querySelector('#bg'),
@@ -42,9 +40,9 @@ renderer.setPixelRatio(
   Math.min(window.devicePixelRatio, 2)
 );
 
-/* =========================
+/* =========================================
    LIGHT
-========================= */
+========================================= */
 
 const light = new THREE.PointLight(
   0xff8800,
@@ -55,15 +53,17 @@ light.position.set(10, 10, 10);
 
 scene.add(light);
 
-/* =========================
+/* =========================================
    STARS
-========================= */
+========================================= */
 
 const starsGeometry =
   new THREE.BufferGeometry();
 
 const starsCount =
-  isMobile ? 2000 : 5000;
+  window.innerWidth < 768
+    ? 2000
+    : 5000;
 
 const starsArray =
   new Float32Array(starsCount * 3);
@@ -86,7 +86,10 @@ starsGeometry.setAttribute(
 const starsMaterial =
   new THREE.PointsMaterial({
     color: 0xffffff,
-    size: isMobile ? 0.03 : 0.02
+    size:
+      window.innerWidth < 768
+        ? 0.03
+        : 0.02
   });
 
 const stars =
@@ -97,9 +100,9 @@ const stars =
 
 scene.add(stars);
 
-/* =========================
+/* =========================================
    HEART
-========================= */
+========================================= */
 
 const heartShape =
   new THREE.Shape();
@@ -166,27 +169,72 @@ const heart =
     heartMaterial
   );
 
-const heartScale =
-  isMobile ? 0.22 : 0.3;
-
-heart.scale.set(
-  heartScale,
-  heartScale,
-  heartScale
-);
-
 heart.rotation.z = Math.PI;
-
-heart.position.set(0, 2, 2);
 
 scene.add(heart);
 
-/* =========================
-   GLOW RING
-========================= */
+/* =========================================
+   RESPONSIVE HEART
+========================================= */
 
-const ringRadius =
-  isMobile ? 3.8 : 5;
+function updateHeartResponsive() {
+
+  const width = window.innerWidth;
+
+  let scale;
+  let posY;
+  let cameraZ;
+
+  if (width < 480) {
+
+    scale = 0.16;
+    posY = 1;
+    cameraZ = 28;
+
+  }
+
+  else if (width < 768) {
+
+    scale = 0.22;
+    posY = 1.5;
+    cameraZ = 24;
+
+  }
+
+  else {
+
+    scale = 0.3;
+    posY = 2;
+    cameraZ = 20;
+
+  }
+
+  heart.scale.set(
+    scale,
+    scale,
+    scale
+  );
+
+  heart.position.set(
+    0,
+    posY,
+    2
+  );
+
+  camera.position.z = cameraZ;
+
+}
+
+updateHeartResponsive();
+
+/* =========================================
+   GLOW RING
+========================================= */
+
+let ringRadius =
+  window.innerWidth < 768
+    ? 3.8
+    : 5;
 
 const glowGeometry =
   new THREE.TorusGeometry(
@@ -215,9 +263,9 @@ glowRing.position.y = -0.6;
 
 scene.add(glowRing);
 
-/* =========================
+/* =========================================
    SHADOW RING
-========================= */
+========================================= */
 
 const shadowRing =
   new THREE.Mesh(
@@ -247,9 +295,9 @@ shadowRing.position.y = -0.6;
 
 scene.add(shadowRing);
 
-/* =========================
+/* =========================================
    TEXTS
-========================= */
+========================================= */
 
 const phrases = [
 
@@ -270,50 +318,66 @@ const phrases = [
 
 const textElements = [];
 
-const radiusX =
-  isMobile ? 140 : 270;
+function createTexts() {
 
-const radiusY =
-  isMobile ? 90 : 140;
-
-for (let i = 0; i < phrases.length; i++) {
-
-  const div =
-    document.createElement('div');
-
-  div.className = 'orbitText';
-
-  div.innerText = phrases[i];
-
-  document.body.appendChild(div);
-
-  textElements.push({
-
-    element: div,
-
-    x:
-      Math.cos(
-        (i / phrases.length) *
-        Math.PI * 2
-      ) * radiusX +
-
-      (Math.random() - 0.5) * 40,
-
-    y:
-      Math.sin(
-        (i / phrases.length) *
-        Math.PI * 2
-      ) * radiusY +
-
-      (Math.random() - 0.5) * 30
-
+  textElements.forEach((t) => {
+    t.element.remove();
   });
+
+  textElements.length = 0;
+
+  const radiusX =
+    window.innerWidth < 768
+      ? 140
+      : 270;
+
+  const radiusY =
+    window.innerWidth < 768
+      ? 90
+      : 140;
+
+  for (let i = 0; i < phrases.length; i++) {
+
+    const div =
+      document.createElement('div');
+
+    div.className = 'orbitText';
+
+    div.innerText = phrases[i];
+
+    document.body.appendChild(div);
+
+    textElements.push({
+
+      element: div,
+
+      x:
+        Math.cos(
+          (i / phrases.length) *
+          Math.PI * 2
+        ) * radiusX +
+
+        (Math.random() - 0.5) * 40,
+
+      y:
+        Math.sin(
+          (i / phrases.length) *
+          Math.PI * 2
+        ) * radiusY +
+
+        (Math.random() - 0.5) * 30
+
+    });
+
+  }
 
 }
 
-/* =========================
+createTexts();
+
+/* =========================================
    FLOATING ITEMS
-========================= */
+========================================= */
 
 function createFloatingItem(symbol) {
 
@@ -340,7 +404,7 @@ function createFloatingItem(symbol) {
     `${size}px`;
 
   const duration =
-    isMobile
+    window.innerWidth < 768
       ? Math.random() * 2 + 2
       : Math.random() * 3 + 2;
 
@@ -381,9 +445,9 @@ function createFloatingItem(symbol) {
 
 }
 
-/* =========================
+/* =========================================
    FLOATING EFFECT
-========================= */
+========================================= */
 
 const symbols = [
   '❤️',
@@ -414,9 +478,9 @@ setTimeout(() => {
 
 }, 4000);
 
-/* =========================
+/* =========================================
    MOUSE PARALLAX
-========================= */
+========================================= */
 
 document.addEventListener(
   'mousemove',
@@ -439,19 +503,23 @@ document.addEventListener(
   }
 );
 
-/* =========================
-   HEART BEAT
-========================= */
+/* =========================================
+   HEART PULSE
+========================================= */
 
 let scaleDirection = 1;
 
 function pulseHeart() {
 
-  const minScale =
-    isMobile ? 0.22 : 0.3;
+  const baseScale =
+    window.innerWidth < 480
+      ? 0.16
+      : window.innerWidth < 768
+      ? 0.22
+      : 0.3;
 
   const maxScale =
-    isMobile ? 0.25 : 0.34;
+    baseScale + 0.03;
 
   heart.scale.x +=
     0.0008 * scaleDirection;
@@ -468,7 +536,7 @@ function pulseHeart() {
 
   }
 
-  if (heart.scale.x <= minScale) {
+  if (heart.scale.x <= baseScale) {
 
     scaleDirection = 1;
 
@@ -476,9 +544,9 @@ function pulseHeart() {
 
 }
 
-/* =========================
+/* =========================================
    ANIMATION
-========================= */
+========================================= */
 
 function animate() {
 
@@ -511,15 +579,18 @@ function animate() {
 
   });
 
-  renderer.render(scene, camera);
+  renderer.render(
+    scene,
+    camera
+  );
 
 }
 
 animate();
 
-/* =========================
-   RESPONSIVE
-========================= */
+/* =========================================
+   RESIZE
+========================================= */
 
 window.addEventListener(
   'resize',
@@ -535,6 +606,10 @@ window.addEventListener(
       window.innerWidth,
       window.innerHeight
     );
+
+    updateHeartResponsive();
+
+    createTexts();
 
   }
 );
