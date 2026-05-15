@@ -1,0 +1,71 @@
+body{
+  margin:0;
+  overflow:hidden;
+  background:black;
+  font-family:Arial;
+}
+
+canvas{
+  position:fixed;
+  top:0;
+  left:0;
+}
+
+.orbitText{
+
+  position:absolute;
+
+  color:#f3f1ee;
+
+  font-size:10px;
+
+  font-weight:bold;
+
+  text-shadow:
+    0 0 10px #ff3c00,
+    0 0 20px #ff6600,
+    0 0 40px #ff3300,
+    0 0 80px #e92304;
+
+  transform:
+    translate(-50%, -50%);
+
+  white-space:nowrap;
+
+  pointer-events:none;
+}
+
+body::after{
+
+  content:'';
+
+  position:fixed;
+
+  inset:0;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255,120,0,0.12),
+      transparent 70%
+    );
+
+  pointer-events:none;
+}
+.floatingItem{
+
+  position:fixed;
+
+  z-index:999;
+
+  pointer-events:none;
+
+  user-select:none;
+
+  text-shadow:
+    0 0 10px #ff66aa,
+    0 0 20px #ff3388,
+    0 0 40px #ff1177;
+
+  animation-timing-function:linear;
+}
